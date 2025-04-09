@@ -84,6 +84,12 @@ public class CardGameServer {
     static class LoginHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+        // Обработка OPTIONS-запроса (preflight)
+            if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                sendResponse(exchange, 200, "");
+                return;
+            }
+
             if (!"POST".equals(exchange.getRequestMethod())) {
                 sendResponse(exchange, 405, "Method Not Allowed");
                 return;
@@ -110,6 +116,12 @@ public class CardGameServer {
     static class StateHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+                // Обработка OPTIONS-запроса (preflight)
+                    if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                        sendResponse(exchange, 200, "");
+                        return;
+                    }
+
             if (!"GET".equals(exchange.getRequestMethod())) {
                 sendResponse(exchange, 405, "Method Not Allowed");
                 return;
@@ -146,6 +158,12 @@ public class CardGameServer {
     static class PlayHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+                // Обработка OPTIONS-запроса (preflight)
+                    if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                        sendResponse(exchange, 200, "");
+                        return;
+                    }
+
             if (!"POST".equals(exchange.getRequestMethod())) {
                 sendResponse(exchange, 405, "Method Not Allowed");
                 return;
@@ -169,6 +187,12 @@ public class CardGameServer {
     static class ChooseHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+                // Обработка OPTIONS-запроса (preflight)
+                    if ("OPTIONS".equals(exchange.getRequestMethod())) {
+                        sendResponse(exchange, 200, "");
+                        return;
+                    }
+
             if (!"POST".equals(exchange.getRequestMethod())) {
                 sendResponse(exchange, 405, "Method Not Allowed");
                 return;
@@ -268,11 +292,25 @@ public class CardGameServer {
     }
 
     private static void sendResponse(HttpExchange exchange, int code, String response) throws IOException {
-        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        // Настройки CORS
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "*");
+        exchange.getResponseHeaders().set("Access-Control-Expose-Headers", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Credentials", "true");
+        
+        // Для preflight запросов
+        if ("OPTIONS".equals(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(204, -1);
+            return;
+        }
+
+        // Основные заголовки
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(code, response.getBytes().length);
-        OutputStream os = exchange.getResponseBody();
-        os.write(response.getBytes());
-        os.close();
+
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
     }
 }

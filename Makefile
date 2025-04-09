@@ -5,4 +5,4 @@ build-server:
 	cd ./javacardback && javac -cp .:gson-2.10.1.jar CardGameServer.java
 
 start-client:
-	cd ./javacardfront && npm run dev
+	npm run dev

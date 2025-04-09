@@ -14,7 +14,7 @@ function CardGame() {
     if (!loggedIn) return;
 
     const interval = setInterval(() => {
-      fetch(`http://localhost:8080/api/state?player=${name}`)
+      fetch(`http://176.118.232.69:8080/api/state?player=${name}`)
           .then(res => res.json())
           .then(data => setGameState(data))
           .catch(err => console.error(err));
@@ -28,8 +28,9 @@ function CardGame() {
     const playerName = prompt('Введите ваше имя:');
     if (!playerName) return;
 
-    fetch('http://localhost:8080/api/login', {
+    fetch('http://176.118.232.69:8080/api/login', {
       method: 'POST',
+      mode: 'cors',
       body: playerName,
       headers: {
         'Content-Type': 'text/plain'
@@ -45,7 +46,8 @@ function CardGame() {
 
   // Начать игру
   const handleStartGame = () => {
-    fetch('http://localhost:8080/api/start', {
+    fetch('http://176.118.232.69:8080/api/start', {
+      mode: 'cors',
       method: 'POST'
     })
         .catch(err => console.error(err));
@@ -55,8 +57,9 @@ function CardGame() {
   const handlePlayCard = (card) => {
     if (gameState.isLeader) return;
 
-    fetch('http://localhost:8080/api/play', {
+    fetch('http://176.118.232.69:8080/api/play', {
       method: 'POST',
+      mode: 'cors',
       body: `${name}:${card}`,
       headers: {
         'Content-Type': 'text/plain'
@@ -68,9 +71,10 @@ function CardGame() {
 
   // Выбрать победившую карту (для ведущего)
   const handleChooseWinner = (card) => {
-    fetch('http://localhost:8080/api/choose', {
+    fetch('http://176.118.232.69:8080/api/choose', {
       method: 'POST',
       body: `${name}:${card}`,
+      mode: 'cors',
       headers: {
         'Content-Type': 'text/plain'
       }
