@@ -1,103 +1,170 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import React, { useState, useEffect } from 'react';
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+function CardGame() {
+  const [name, setName] = useState('');
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [gameState, setGameState] = useState(null);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [winnerCard, setWinnerCard] = useState(null);
+
+  // Запрос состояния игры каждые 1.5 секунды
+  useEffect(() => {
+    if (!loggedIn) return;
+
+    const interval = setInterval(() => {
+      fetch(`http://localhost:8080/api/state?player=${name}`)
+          .then(res => res.json())
+          .then(data => setGameState(data))
+          .catch(err => console.error(err));
+    }, 1500);
+
+    return () => clearInterval(interval);
+  }, [loggedIn, name]);
+
+  // Обработка входа игрока
+  const handleLogin = () => {
+    const playerName = prompt('Введите ваше имя:');
+    if (!playerName) return;
+
+    fetch('http://localhost:8080/api/login', {
+      method: 'POST',
+      body: playerName,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    })
+        .then(res => res.json())
+        .then(data => {
+          setName(data.name);
+          setLoggedIn(true);
+        })
+        .catch(err => console.error(err));
+  };
+
+  // Начать игру
+  const handleStartGame = () => {
+    fetch('http://localhost:8080/api/start', {
+      method: 'POST'
+    })
+        .catch(err => console.error(err));
+  };
+
+  // Сыграть карту
+  const handlePlayCard = (card) => {
+    if (gameState.isLeader) return;
+
+    fetch('http://localhost:8080/api/play', {
+      method: 'POST',
+      body: `${name}:${card}`,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    })
+        .then(() => setSelectedCard(card))
+        .catch(err => console.error(err));
+  };
+
+  // Выбрать победившую карту (для ведущего)
+  const handleChooseWinner = (card) => {
+    fetch('http://localhost:8080/api/choose', {
+      method: 'POST',
+      body: `${name}:${card}`,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    })
+        .then(() => setWinnerCard(card))
+        .catch(err => console.error(err));
+  };
+
+  if (!loggedIn) {
+    return (
+        <div className="login-screen">
+          <h1>Карточная игра</h1>
+          <button onClick={handleLogin}>Войти в игру</button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    );
+  }
+
+  if (!gameState) {
+    return <div>Загрузка...</div>;
+  }
+
+  return (
+      <div className="game-container">
+        <h1>Карточная игра</h1>
+        <p>Вы вошли как: {name}</p>
+        <p>Очки: {gameState.scores?.[name] || 0}</p>
+
+        {!gameState.gameStarted && (
+            <div className="lobby">
+              <h2>Лобби</h2>
+              <p>Игроков онлайн: {Object.keys(gameState.scores || {}).length}</p>
+              {Object.keys(gameState.scores || {}).length >= 2 && (
+                  <button onClick={handleStartGame}>Начать игру</button>
+              )}
+            </div>
+        )}
+
+        {gameState.gameStarted && (
+            <div className="game-area">
+              <div className="red-card">
+                <h3>Красная карта:</h3>
+                <p>{gameState.currentRedCard}</p>
+                <p>Ведущий: {gameState.currentRoundLeader}</p>
+              </div>
+
+              {gameState.isLeader ? (
+                  <div className="leader-view">
+                    <h3>Вы - ведущий!</h3>
+                    <p>Выберите лучшую карту:</p>
+                    <div className="played-cards">
+                      {Object.entries(gameState.playedCards || {}).map(([player, card]) => (
+                          <div
+                              key={card}
+                              className={`card ${winnerCard === card ? 'selected' : ''}`}
+                              onClick={() => handleChooseWinner(card)}
+                          >
+                            {card}
+                            <small>(от {player})</small>
+                          </div>
+                      ))}
+                    </div>
+                  </div>
+              ) : (
+                  <div className="player-view">
+                    <h3>Ваши карты:</h3>
+                    <div className="hand">
+                      {(gameState.myCards || []).map((card, index) => (
+                          <div
+                              key={index}
+                              className={`card ${selectedCard === card ? 'played' : ''}`}
+                              onClick={() => !selectedCard && handlePlayCard(card)}
+                          >
+                            {card}
+                          </div>
+                      ))}
+                    </div>
+                    {selectedCard && <p>Вы сыграли карту: {selectedCard}</p>}
+                  </div>
+              )}
+
+              <div className="scoreboard">
+                <h3>Таблица очков:</h3>
+                <ul>
+                  {Object.entries(gameState.scores || {}).map(([player, score]) => (
+                      <li key={player}>
+                        {player}: {score} {gameState.winningPlayer === player && '★'}
+                      </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+        )}
+      </div>
   );
 }
+
+export default CardGame;
