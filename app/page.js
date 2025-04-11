@@ -11,7 +11,6 @@ function CardGame() {
     const [selectedCard, setSelectedCard] = useState(null);
     const [winnerCard, setWinnerCard] = useState(null);
 
-    // Запрос состояния игры каждые 1.5 секунды
     useEffect(() => {
         if (!loggedIn) return;
 
@@ -25,7 +24,6 @@ function CardGame() {
         return () => clearInterval(interval);
     }, [loggedIn, name]);
 
-    // Обработка входа игрока
     const handleLogin = () => {
         const playerName = prompt('Введите ваше имя:');
         if (!playerName) return;
@@ -46,7 +44,6 @@ function CardGame() {
             .catch(err => console.error(err));
     };
 
-    // Начать игру
     const handleStartGame = () => {
         fetch('http://176.118.232.69:8080/api/start', {
             mode: 'cors',
@@ -55,7 +52,6 @@ function CardGame() {
             .catch(err => console.error(err));
     };
 
-    // Сыграть карту
     const handlePlayCard = (card) => {
         if (gameState.isLeader) return;
 
@@ -71,7 +67,6 @@ function CardGame() {
             .catch(err => console.error(err));
     };
 
-    // Выбрать победившую карту (для ведущего)
     const handleChooseWinner = (card) => {
         fetch('http://176.118.232.69:8080/api/choose', {
             method: 'POST',
@@ -103,18 +98,24 @@ function CardGame() {
     }
 
     if (!gameState) {
-        return <div>Загрузка...</div>;
+        return <div className="loading-screen">Загрузка</div>;
     }
 
     return (
         <div className="game-container">
             {!gameState.gameStarted && (
-                <div className="lobby">
-                    <h2>Лобби</h2>
-                    <p>Игроков онлайн: {Object.keys(gameState.scores || {}).length}</p>
-                    {Object.keys(gameState.scores || {}).length >= 2 && (
-                        <button onClick={handleStartGame}>Начать игру</button>
-                    )}
+                <div className="login-screen">
+                    <div className="login-screen__container">
+                        <h1 className="login-screen__title">Игроков в
+                            комнате: {Object.keys(gameState.scores || {}).length}</h1>
+                    </div>
+
+                    {Object.keys(gameState.scores || {}).length >= 2 &&
+                        <div className="start-button" onClick={handleStartGame}>
+                            <div className="start-button__face">Начать игру</div>
+                            <div className="start-button__bottom">Начать игру</div>
+                        </div>
+                    }
                 </div>
             )}
 
@@ -141,7 +142,7 @@ function CardGame() {
                         </div>
 
                         {Object.entries(gameState.playedCards || {}).map(([player, card]) => (
-                            <div className="field-card-container">
+                            <div key={player + card} className="field-card-container">
                                 <div
                                     key={card}
                                     className={`card field-card ${gameState.isLeader ? 'pointer' : ''}`}
@@ -150,7 +151,8 @@ function CardGame() {
                                     {(gameState.isLeader || name === player) && (
                                         <p className="card__text">{card}</p>
                                     )}
-                                    <img src="./logo-black.png" alt="" className={`card__logo ${gameState.isLeader || name === player ? 'card__logo' : 'field-card__logo'}`}/>
+                                    <img src="./logo-black.png" alt=""
+                                         className={`card__logo ${gameState.isLeader || name === player ? 'card__logo' : 'field-card__logo'}`}/>
                                 </div>
                                 <small>
                                     <img src="./person.png" alt="" className="player-icon"/>
@@ -160,7 +162,6 @@ function CardGame() {
                         ))}
                     </div>
 
-
                     {!gameState.isLeader && (
                         <div className="player-view">
                             <div className="player-view__hand">
@@ -168,7 +169,7 @@ function CardGame() {
                                     <div
                                         key={index}
                                         className={`card player-card ${selectedCard === card ? 'played' : ''}`}
-                                        onClick={() => !selectedCard && handlePlayCard(card)}
+                                        onClick={() => !gameState.playedCards.hasOwnProperty(name) && handlePlayCard(card)}
                                     >
                                         <p className="card__text">{card}</p>
                                         <img src="./logo-black.png" alt="" className="card__logo"/>
@@ -183,7 +184,7 @@ function CardGame() {
                             {Object.entries(gameState.scores || {}).map(([player, score]) => (
                                 <li className="player-score" key={player}>
                                     <img src="./person.png" alt="" className="player-icon"/>
-                                    {player == name ? '(Я)' : ''} {player}: {score} {gameState.winningPlayer === player && '★'}
+                                    {player === name ? '(Я)' : ''} {player}: {score} {gameState.winningPlayer === player && '★'}
                                 </li>
                             ))}
                         </ul>

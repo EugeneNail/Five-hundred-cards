@@ -4,6 +4,7 @@
   box-sizing: border-box
   font-family: monospace !important
   color: #333
+  user-select: none
 
 body
   background: #fbeaea
@@ -91,10 +92,10 @@ body
   width: 120px
   height: 170px
   border-radius: 7px
-  font-size: 12px
+  font-size: 11px
   font-family: Arial, serif
   transition: .5s
-  padding: 16px 8px
+  padding: 14px 8px
   position: relative
   overflow: hidden
 
@@ -117,6 +118,7 @@ body
   &.played
     transform: translateY(-30px)
     animation: flyUpAndFadeOut .5s ease-in
+    opacity: 0
 
   &__text
 
@@ -196,3 +198,29 @@ body
   gap: 5px
   align-items: center
   margin-bottom: 10px
+
+.loading-screen
+  margin-top: 50vh
+  transform: translateY(-50%)
+  font-size: 55px
+  font-weight: bold
+  text-align: center
+  position: relative
+
+  &::after
+    content: '...'
+    position: absolute
+    animation: revealDots 2s infinite steps(4)
+
+@keyframes revealDots
+  0%
+    content: ''
+
+  33%
+    content: '.'
+
+  66%
+    content: '..'
+
+  100%
+    content: '...'
