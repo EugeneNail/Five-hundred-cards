@@ -135,17 +135,17 @@ function CardGame() {
                                 <img src="./logo-white.png" alt="" className="card__logo"/>
                                 <p className="card__text">{gameState.currentRedCard}</p>
                             </div>
-                            <small>
+                            {!gameState.isLeader && <small>
                                 <img src="./person.png" alt="" className="player-icon"/>
                                 {gameState.currentRoundLeader}
-                            </small>
+                            </small>}
                         </div>
 
                         {Object.entries(gameState.playedCards || {}).map(([player, card]) => (
                             <div key={player + card} className="field-card-container">
                                 <div
                                     key={card}
-                                    className={`card field-card ${gameState.isLeader ? 'pointer' : ''}`}
+                                    className={`card field-card ${gameState.isLeader ? 'pointer' : ''} ${gameState.isLeader ? 'hoverable' : ''}`}
                                     onClick={() => handleChooseWinner(card)}
                                 >
                                     {(gameState.isLeader || name === player) && (
@@ -154,10 +154,10 @@ function CardGame() {
                                     <img src="./logo-black.png" alt=""
                                          className={`card__logo ${gameState.isLeader || name === player ? 'card__logo' : 'field-card__logo'}`}/>
                                 </div>
-                                <small>
+                                {!gameState.isLeader && <small>
                                     <img src="./person.png" alt="" className="player-icon"/>
-                                    {player}
-                                </small>
+                                    {player === name ? 'Я' : player}
+                                </small>}
                             </div>
                         ))}
                     </div>
