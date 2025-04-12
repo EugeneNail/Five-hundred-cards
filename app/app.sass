@@ -97,7 +97,6 @@ body
   transition: .5s
   padding: 14px 8px
   position: relative
-  overflow: hidden
 
   &__logo
     left: 10px
@@ -108,11 +107,35 @@ body
   &.pointer
     cursor: pointer
 
+  &__replace-button
+    padding: 10px
+    position: absolute
+    width: 40px
+    height: 40px
+    left: 50%
+    bottom: 24px
+    transition: .5s
+    opacity: 0
+    z-index: 100
+    transform: translateX(-50%)
+
+
+  &:hover &__replace-button
+    transform: translateY(60px) translateX(-50%)
+    opacity: 1
+
+  &.played &__replace-button
+    display: none
+
+.blank-card
+  border: 2px dashed gray
+
 .player-card
   background: #fcfcfc
   cursor: pointer
 
   &:hover
+    z-index: 100
     transform: translateY(-30px)
 
   &.played
@@ -137,6 +160,7 @@ body
 
 .red-card
   background: #d72b2b
+  border: none
 
   & *
     color: white
@@ -201,6 +225,7 @@ body
   gap: 5px
   align-items: center
   margin-bottom: 10px
+  justify-content: center
 
 .loading-screen
   margin-top: 50vh
@@ -227,3 +252,11 @@ body
 
   100%
     content: '...'
+
+.cards-left
+  position: absolute
+  right: 20px
+  top: 20px
+
+  & p
+    margin-bottom: 10px

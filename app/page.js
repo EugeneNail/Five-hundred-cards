@@ -67,6 +67,21 @@ function CardGame() {
             .catch(err => console.error(err));
     };
 
+    const handleReplaceCard = (card) => {
+        if (gameState.isLeader) return;
+
+        fetch('http://176.118.232.69:8080/api/replace', {
+            method: 'POST',
+            mode: 'cors',
+            body: `${name}:${card}`,
+            headers: {
+                'Content-Type': 'text/plain'
+            }
+        })
+            .then(() => setSelectedCard(card))
+            .catch(err => console.error(err));
+    };
+
     const handleChooseWinner = (card) => {
         fetch('http://176.118.232.69:8080/api/choose', {
             method: 'POST',
@@ -86,7 +101,7 @@ function CardGame() {
                 <div className="login-screen__container">
                     <img src="./logo-black.png" alt="" className="login-screen__logo"/>
                     <h1 className="login-screen__title">...злобных карт</h1>
-                    <h3 className="login-screen__subtitle">Сделано лучшим в мире разработчиком -- мной</h3>
+                    <h3 className="login-screen__subtitle">Сделано лучшим в мире разработчиком — мной</h3>
                 </div>
 
                 <div className="start-button" onClick={handleLogin}>
@@ -101,6 +116,9 @@ function CardGame() {
         return <div className="loading-screen">Загрузка</div>;
     }
 
+    let blankCardCount = Object.keys(gameState.scores || {}).length - Object.entries(gameState.playedCards || {}).length - 1;
+    const blankCards =  blankCardCount > 0 ? Array(blankCardCount).fill(blankCardCount) : null;
+
     return (
         <div className="game-container">
             {!gameState.gameStarted && (
@@ -108,9 +126,17 @@ function CardGame() {
                     <div className="login-screen__container">
                         <h1 className="login-screen__title">Игроков в
                             комнате: {Object.keys(gameState.scores || {}).length}</h1>
+                        <ul>
+                            {Object.entries(gameState.scores || {}).map(([player, score]) => (
+                                <li className="player-score" key={player}>
+                                    <img src="./person.png" alt="" className="player-icon"/>
+                                    {player === name ? '(Я)' : ''} {player}
+                                </li>
+                            ))}
+                        </ul>
                     </div>
 
-                    {Object.keys(gameState.scores || {}).length >= 2 &&
+                    {Object.keys(gameState.scores || {}).length >= 2 && name === 'Евжений' &&
                         <div className="start-button" onClick={handleStartGame}>
                             <div className="start-button__face">Начать игру</div>
                             <div className="start-button__bottom">Начать игру</div>
@@ -160,6 +186,9 @@ function CardGame() {
                                 </small>}
                             </div>
                         ))}
+                        {blankCards && blankCards.map(_ => (
+                            <div key={Math.random() * 123} className="card blank-card"></div>
+                        ))}
                     </div>
 
                     {!gameState.isLeader && (
@@ -173,6 +202,7 @@ function CardGame() {
                                     >
                                         <p className="card__text">{card}</p>
                                         <img src="./logo-black.png" alt="" className="card__logo"/>
+                                        <img src="./replace.png" className="card__replace-button" onClick={() => !gameState.playedCards.hasOwnProperty(name) && handleReplaceCard(card)}/>
                                     </div>
                                 ))}
                             </div>
@@ -188,6 +218,11 @@ function CardGame() {
                                 </li>
                             ))}
                         </ul>
+                    </div>
+
+                    <div className="cards-left">
+                        <p className="cards-left__message">Белых карт: {gameState.whiteCardCount}</p>
+                        <p className="cards-left__message">Красных карт: {gameState.redCardCount}</p>
                     </div>
                 </div>
             )}
