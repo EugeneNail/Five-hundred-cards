@@ -600,6 +600,36 @@ public class CardGameServer {
         whiteCards.add("Двойное проникновение");
         whiteCards.add("Стресс");
 
+        whiteCards.add("Роботы-казаки");
+        whiteCards.add("Армяне");
+        whiteCards.add("Впивающиеся в анус стринги");
+        whiteCards.add("Расстрел царской семьи");
+        whiteCards.add("Наркоманы и проститутки");
+        whiteCards.add("Озорной гей");
+        whiteCards.add("Двойник Путина");
+        whiteCards.add("Реклама вконтакте");
+        whiteCards.add("Женский бокс");
+        whiteCards.add("Каннибализм");
+
+        whiteCards.add("Тупые вопросы");
+        whiteCards.add("Дискотека 90-х");
+        whiteCards.add("Кормление блинами с лопаты");
+        whiteCards.add("Пиздюли");
+        whiteCards.add("Стоимость квартиры в Москве");
+        whiteCards.add("Самоубийство");
+        whiteCards.add("Калмыкские мракоборцы");
+        whiteCards.add("Заботливая стриптизерша");
+        whiteCards.add("Байден");
+        whiteCards.add("Шатер-проктолог");
+
+        whiteCards.add("Райан Гослинг в моей кровати");
+        whiteCards.add("Пенис коня");
+        whiteCards.add("Премиум аккаунт на PornHub");
+        whiteCards.add("Либералы");
+        whiteCards.add("Безупречная лысина");
+
+
+
         redCards.add("___ у меня в крови. Это секрет моего успеха в бизнесе");
         redCards.add("Инопланетяне угрожают уничтожить Землю, если им не отдадут ___");
         redCards.add("В рот мне ___!");
@@ -743,6 +773,9 @@ public class CardGameServer {
         redCards.add("Если не можешь быть с тем, кого любишь, будь с ___");
         redCards.add("Во время секса мне нравится думать о ___");
 
+        redCards.add("Нет! Не иди в ванную! Там ___!");
+        redCards.add("Из-за ___ я потеряла девственность");
+        redCards.add("На ежегодном рэп-батле всех поразил ___");
 
         Collections.shuffle(whiteCards);
         Collections.shuffle(redCards);
